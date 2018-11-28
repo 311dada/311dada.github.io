@@ -6,7 +6,7 @@ date:       2018-11-28              # 时间
 author:     An automatic pencil                      # 作者
 header-img: img/computer-network-1.jpg    #这篇文章标题背景图片
 catalog: true                       # 是否归档
-tags:       computer-network                        #标签
+tags:       ComputerNetwork                      #标签
 ---
 
 # 导言
