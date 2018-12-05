@@ -1,72 +1,57 @@
 ---
 layout:     post                    # 使用的布局（不需要改）
-title:      HackerRank Problem Ants           # 标题 
-subtitle:   
-date:       2018-12-3              # 时间
+title:      强化学习（一）         # 标题 
+subtitle:   初识强化学习及概念理解
+date:       2018-12-5             # 时间
 author:     An automatic pencil                      # 作者
-header-img: img/HackerRank-Ants.jpg    #这篇文章标题背景图片
+header-img: img/RL1.jpg    #这篇文章标题背景图片
 catalog: true                       # 是否归档
-tags:       HackerRank                        #标签
+tags:   Reinforcement learning                        #标签
 ---
 
-## 题目
+## 初步了解强化学习
 
-<a href='https://www.hackerrank.com/challenges/ants/problem'> 看题目戳我 </a>
-
-## 注意事项
-* 蚂蚁初始位置都是整数
-* 最终统计的是每个蚂蚁的次数， 不是相遇次数
-* 每个蚂蚁初始位置不同
-
-## 题解思路
-到手这个题目，一头雾水。但是仔细一看，每个蚂蚁除了初始位置不同，剩余所有的东西都是相同的。而这个题目最烦的地方就是两个蚂蚁相遇后互相掉头，其实这个和两个蚂蚁不掉头穿过对方是相同的。因为这个操作就相当于换了一下两个蚂蚁的名字，而这个对于最终结果是没有影响的。如下图：
+初识强化学习的人一般都会见到下面这张图：
 
 <div  align="center">    
-    <img src="https://s1.ax1x.com/2018/12/03/FKRdJI.png" width = "50%" height = "50%" alt="图像无法显示" />
+    <img src="https://spinningup.openai.com/en/latest/_images/rl_diagram_transparent_bg.png" width = "50%" height = "50%" alt="图像无法显示" />
 </div>
 
-A和B会在C点相遇，按题目要求A和B在C点会掉头。如果不掉头那么其实就是A和B换了一下名字。这还是那群蚂蚁，整体位置状态没有变化，也就对结果没什么影响。那这个问题最烦人的地方就没了，所有蚂蚁都是一直按原方向走就可以了。
-然后看给定的秒数，每个蚂蚁要走$\frac{10^9*0.1}{1000}=10^5$圈，外加每个蚂蚁走0.6。先考虑整圈的情况，走完整圈所有的蚂蚁又回到初始状态，再考虑剩下的0.6。假设对于每一整圈，$x$只蚂蚁顺时针，$y$只蚂蚁逆时针，每圈相遇2次，那么相遇次数一共有$2xy$次相遇。这个根据均值不等式，显然对于N只蚂蚁，最大值为$2*(N/2)*(N-N/2)$。所以整圈最多有$2*(N/2)*(N-N/2)*10^5$。
+强化学习的基本设想是一个智能体(agent)与环境(environment)交互，当智能体采取一个动作(action)后，环境的状态(state)会发生一个改变，并且会对智能体反馈一个奖励(reward)来评价这个动作。
 
-接下来考虑剩下的0.6，由于初始位置是不同整数，所以只有位置相差1的蚂蚁才有可能相遇。这时候的相遇次数就是初始位置中最多选出多少个相差1的数对。
+举个例子：
 
-最终结果则是相加得到相遇次数再乘2，因为每次相遇两个蚂蚁会被计数。
+<div  align="center">    
+    <img src="https://s1.ax1x.com/2018/12/05/FlFcfe.png" width = "20%" height = "20%" alt="图像无法显示" />
+</div>
 
-## 代码
+相信这款类似的游戏大家都玩过，智能体就是小鸟，不做任何操作小鸟会向前和下降，环境就是小鸟所处的游戏环境，小鸟向上和不向上就是它的动作，假如它没有死亡，奖励设置为1，死亡奖励设置为-1000。直观上理解，强化学习通过小鸟一次又一次的尝试游戏，根据奖励更改自己的行为方式。
 
-    #include <bits/stdc++.h>
+强化学习的基本假设：
+<font color="#0000dd">所有的目标都是最大化智能体获得的累计奖励。</font><br /> 
 
-    using namespace std;
+## 强化学习概念理解及标注符号
 
+<font color="#006666">动作</font>: $a$表示智能体采取的一个动作。
 
-    // Complete the solve function below.
-    int solve(vector<int> V) {
-        int N = V.size();
-        int ans = 200000 * (N / 2) * (N - N / 2);
-        vector<int> hash(1000, 0);
-        for(int num:V) hash[num]++;
-        for(int i=0;i<999;i++)
-        {
-            int minm = min(hash[i], hash[i + 1]);
-            ans += minm;
-            hash[i + 1] -= minm;
-        }
-        return ans * 2;
+<font color="#006666">动作空间</font>: $A$表示智能体可以采取的所有的动作集合，有限集。
 
-    }
+<font color="#006666">状态</font>: 状态有环境的状态和智能体的观测状态之分。环境的状态能表示所处环境的所有信息，而智能体的观测状态只包括智能体可以观测的信息。理论上我们需要的状态是环境状态，但是智能体获取的是观测状态，而环境的有些信息可能是无法观测的。这时候我们通过构建合适的描述可以让观测状态近似环境状态，所以实际操作过程中常用$s$（智能体观测状态）代表环境状态。
 
-    int main()
-    {
-        int N;
-        cin>>N;
-        vector<int> V(N, 0);
-        for(int i=0;i<N;i++)
-        {
-            cin>>V[i];
-        }
-        cout<<solve(V);
-        return 0;
-    }
+<font color="#006666">状态空间</font>: $S$表示所有可能状态的集合，有限集。
+
+<font color="#006666">轨迹</font>: $<s_0,a_0,s_1,a_1,...>$是一个智能体与环境相对于时间的交互序列，称它为一个轨迹(episode)，记为$\tau$。对于上面的小鸟游戏来讲，一局游戏便会产生一个轨迹。
+
+<font color="#006666">策略</font>: 智能体会只根据当前状态，不考虑历史状态选取一个动作，那么如何选取这个动作被称为策略(policy)
+
+## 马尔可夫性
+
+## 马尔可夫过程
+
+## 马尔可夫奖励过程
+
+## 马尔可夫决策过程
+
+## 值函数
 
 
-今天的整理就到这里啦~
