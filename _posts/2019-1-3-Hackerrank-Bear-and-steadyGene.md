@@ -2,7 +2,7 @@
 layout:     post                    # 使用的布局（不需要改）
 title:      HackerRank Problem Bear-and-steadyGene         # 标题 
 subtitle:   滑动窗口
-date:       2018-1-3         # 时间
+date:       2019-1-3         # 时间
 author:     An automatic pencil                      # 作者
 header-img:     #这篇文章标题背景图片
 catalog: true                       # 是否归档
